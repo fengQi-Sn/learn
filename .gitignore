@@ -1,0 +1,23 @@
+*~
+.DS_Store
+
+# Eclipse project files
+.classpath
+.project
+.settings/
+.mymetadata
+.myeclipse/
+
+# Intellij project files
+*.iml
+.idea/
+*.yml
+
+#gradle
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+
+# Others
+build/
+target/
+out/
