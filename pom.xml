@@ -8,6 +8,7 @@
     <version>1.0.0</version>
     <modules>
         <module>design-pattern</module>
+        <module>other</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -39,6 +40,11 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.12</version>
                 <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>3.18.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
