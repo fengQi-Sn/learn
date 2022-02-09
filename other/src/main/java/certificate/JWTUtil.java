@@ -12,7 +12,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class JWTUtil {
     public static void main(String[] args) throws Exception {
@@ -26,6 +25,8 @@ public class JWTUtil {
 
     /**
      * 按JWT规范要求生成token
+     * 对于正式环境bid不同会报错401
+     * 对于沙盒环境没有bid的限制，bid错误是查不到单子4040005
      */
     public static String iosToken(String bundleId) throws Exception {
         // 设置头部信息
@@ -40,7 +41,7 @@ public class JWTUtil {
         Long iat = System.currentTimeMillis()/1000;
         payload.put("iat", iat);
         payload.put("exp", iat + 60 * 60);
-        payload.put("nonce", UUID.randomUUID());
+        payload.put("nonce", "6edffe66-b482-11eb-8529-0242ac130003");
         payload.put("bid", bundleId);
 
         PrivateKey privateKey = getPrivateKey("", "EC");
