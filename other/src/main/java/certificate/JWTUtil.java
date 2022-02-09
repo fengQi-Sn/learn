@@ -1,7 +1,11 @@
 package certificate;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.http.client.fluent.Request;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,24 +13,36 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 
 public class JWTUtil {
     public static void main(String[] args) throws Exception {
-        System.out.println(
-                getPrivateKey("/Users/dz0400820/Downloads/2022/my.p8", "EC")
-        );
-
+        String token = iosToken("");
+       String data = Request.Get("https://api.storekit-sandbox.itunes.apple.com/inApps/v1/lookup/{orderId}")
+               .addHeader("Authorization", "Bearer " + token)
+               .connectTimeout(1000).socketTimeout(3000)
+               .execute()
+               .returnContent().toString();
+        JSONObject result = JSONObject.parseObject(data);
+        List<JSONObject> transactionResponses = new ArrayList<>();
+        //处理transactions数组，每一条jwt解码
+        JSONArray transactions = result.getJSONArray("signedTransactions");
+        for (int i=0; i<transactions.size(); i++) {
+            DecodedJWT decodedJWT = JWT.decode(transactions.getString(i));
+            byte[] base64 = Base64.getDecoder().decode(decodedJWT.getPayload());
+            String decodePayLoad = new String(base64);
+            transactionResponses.add(JSONObject.parseObject(decodePayLoad));
+        }
+        System.out.println(transactionResponses);
     }
 
 
 
     /**
      * 按JWT规范要求生成token
-     * 对于正式环境bid不同会报错401
-     * 对于沙盒环境没有bid的限制，bid错误是查不到单子4040005
+     * 对于正式环境bid不同可能会报错401
+     * todo:token redis缓存
      */
     public static String iosToken(String bundleId) throws Exception {
         // 设置头部信息
@@ -51,6 +67,7 @@ public class JWTUtil {
 
     /**
      * 根据证书获取PrivateKey
+     * 证书里的是base64，也可以直接复制出来用
      */
     private static PrivateKey getPrivateKey(String certPath, String algorithm) throws Exception {
         SignedPack signedPack = CertificateCache.getSignedPack(certPath);
@@ -71,5 +88,4 @@ public class JWTUtil {
 
         return priKey;
     }
-
 }
