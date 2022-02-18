@@ -2,6 +2,7 @@ package example.idGenerator.edit;
 
 
 import com.google.common.annotations.VisibleForTesting;
+import example.idGenerator.edit.exception.IdGenerationFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,31 +28,42 @@ public class RandomIdGenerator implements LogTraceIdGenerator{
      * 单元测试用例如何写，关键看你如何定义函数
      */
     @Override
-    public String generate() {
-        String substrOfHostName = getLastfieldOfHostName();
+    public String generate() throws IdGenerationFailureException {
+        String substrOfHostName;
+        try {
+            substrOfHostName = getLastFieldOfHostName();
+        } catch (UnknownHostException e) {
+            throw new IdGenerationFailureException("");
+        }
         long currentTimeMillis = System.currentTimeMillis();
         String randomString = generateRandomAlphameric(8);
-        String id = String.format("%s-%d-%s",
-                substrOfHostName, currentTimeMillis, randomString);
+        String id = String.format("%s-%d-%s", substrOfHostName, currentTimeMillis, randomString);
         return id;
     }
 
 
-    private String getLastfieldOfHostName() {
-        String substrOfHostName = null;
-        try {
-            String hostName = InetAddress.getLocalHost().getHostName();
-            String[] tokens = hostName.split("\\.");
-            substrOfHostName = tokens[tokens.length - 1];
-            return substrOfHostName;
-        } catch (UnknownHostException e) {
-            logger.warn("Failed to get the host name.", e);
+    /**
+     * 获取主机名失败会影响后续逻辑的处理，并不是我们期望的，所以，它是一种异常行为。这里最好是抛出异常，而非返回 NULL 值
+     * 函数和异常有业务相关性
+     */
+    private String getLastFieldOfHostName() throws UnknownHostException {
+        String hostName = InetAddress.getLocalHost().getHostName();
+        if (hostName == null || hostName.isEmpty()) {
+            throw new UnknownHostException("...");
         }
+        String substrOfHostName = getLastSubstrSplittedByDot(hostName);
         return substrOfHostName;
     }
 
+    /**
+     * 对于私有函数可以不用判断，但是对于public需要判断
+     * 如果写单元测试也需要
+     */
     @VisibleForTesting
     public String getLastSubstrSplittedByDot(String hostName) {
+        if (hostName == null || hostName.isEmpty()) {
+            throw new IllegalArgumentException("...");
+        }
         String[] tokens = hostName.split("\\.");
         String substrOfHostName = tokens[tokens.length - 1];
         return substrOfHostName;
@@ -59,6 +71,9 @@ public class RandomIdGenerator implements LogTraceIdGenerator{
 
     @VisibleForTesting
     public String generateRandomAlphameric(int length) {
+        if(length <= 0) {
+            throw new IllegalArgumentException("");
+        }
         char[] randomChars = new char[length];
         int count = 0;
         Random random = new Random();
