@@ -1,9 +1,20 @@
 package mockLearn;
 
-import com.alibaba.dubbo.config.annotation.Reference;
-import mockLearn.reference.ReferenceService;
+import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * 直接对@Reference修饰的对象mock会出问题，但是这样可以成功
+ */
 public class BService {
-    @Reference(parameters = {"method1.timeout", "500", "method2.timeout", "500"})
-    private ReferenceService referenceInterface;
+    private AService aService;
+    @Autowired
+    public void init(AService aService) {
+        this.aService = aService;
+    }
+
+    public void testMethod() {
+        aService.get1();
+        aService.get2("");
+    }
+
 }
