@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-@Slf4j
 @Component
 public class StaticClassTransferMapper {
     /**

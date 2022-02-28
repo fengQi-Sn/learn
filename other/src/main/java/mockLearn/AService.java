@@ -6,7 +6,6 @@ import mockLearn.reference.ReferenceService;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
 public class AService {
 
     @Reference(parameters = {"method.timeout", "3000"})
