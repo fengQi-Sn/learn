@@ -19,7 +19,8 @@ public class EmailReporter extends ScheduledReporter {
 
     // 兼顾代码的易用性，新增一个封装了默认依赖的构造函数
     public EmailReporter(List<String> emailToAddresses) {
-        this(new RedisMetricsStorage(), new Aggregator(), new EmailViewer(emailToAddresses));
+        super(new RedisMetricsStorage(), new Aggregator(), new EmailViewer());
+        //this(new RedisMetricsStorage(), new Aggregator(), new EmailViewer(emailToAddresses));
     }
 
     // 兼顾灵活性和代码的可测试性，这个构造函数继续保留
