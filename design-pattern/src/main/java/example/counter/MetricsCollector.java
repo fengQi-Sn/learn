@@ -17,6 +17,10 @@ public class MetricsCollector {
         this.metricsStorage = metricsStorage;
     }
 
+    public MetricsCollector() {
+
+    }
+
     /**
      * 用一个函数代替了最小原型中的两个函数
      */
