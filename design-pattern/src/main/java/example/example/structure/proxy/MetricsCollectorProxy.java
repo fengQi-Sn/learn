@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+//基于接口
 public class MetricsCollectorProxy {
     private MetricsCollector metricsCollector;
 
@@ -36,6 +37,7 @@ public class MetricsCollectorProxy {
             long responseTime = endTimestamp - startTimestamp;
             String apiName = proxiedObject.getClass().getName() + ":" + method.getName();
             RequestInfo requestInfo = new RequestInfo(apiName, responseTime, startTimestamp);
+            System.out.println("apiName:" + apiName + ",responseTime:" + responseTime);
             metricsCollector.recordRequest(requestInfo);
             return result;
         }
@@ -45,9 +47,7 @@ public class MetricsCollectorProxy {
     public static void main(String[] args) {
         MetricsCollectorProxy proxy = new MetricsCollectorProxy();
         IUserController userController = (IUserController) proxy.createProxy(new UserController());
+        userController.login();
     }
-
-
-
 }
 
