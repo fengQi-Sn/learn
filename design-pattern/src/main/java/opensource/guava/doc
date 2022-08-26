@@ -1,0 +1,101 @@
+
+public interface Interf {
+  void f1();
+  void f2();
+}
+public class OriginalClass implements Interf {
+  @Override
+  public void f1() { //... }
+  @Override
+  public void f2() { //... }
+}
+
+public class WrapperClass implements Interf {
+  private OriginalClass oc;
+  public WrapperClass(OriginalClass oc) {
+    this.oc = oc;
+  }
+  @Override
+  public void f1() {
+    //...附加功能...
+    this.oc.f1();
+    //...附加功能...
+  }
+  @Override
+  public void f2() {
+    this.oc.f2();
+  }
+}
+
+
+一个对象的状态在对象创建之后就不再改变，这就是所谓的不变模式。其中涉及的类就是不变类（Immutable Class），对象就是不变对象（Immutable Object）。在 Java 中，最常用的不变类就是 String 类，String 对象一旦创建之后就无法改变。
+不变模式可以分为两类，一类是普通不变模式，另一类是深度不变模式（Deeply Immutable Pattern）。普通的不变模式指的是，对象中包含的引用对象是可以改变的。如果不特别说明，通常我们所说的不变模式，指的就是普通的不变模式。
+深度不变模式指的是，对象包含的引用对象也不可变。
+
+
+// 普通不变模式
+public class User {
+  private String name;
+  private int age;
+  private Address addr;
+
+  public User(String name, int age, Address addr) {
+    this.name = name;
+    this.age = age;
+    this.addr = addr;
+  }
+  // 只有getter方法，无setter方法...
+}
+
+public class Address {
+  private String province;
+  private String city;
+  public Address(String province, String city) {
+    this.province = province;
+    this.city= city;
+  }
+  // 有getter方法，也有setter方法...
+}
+
+// 深度不变模式
+public class User {
+  private String name;
+  private int age;
+  private Address addr;
+
+  public User(String name, int age, Address addr) {
+    this.name = name;
+    this.age = age;
+    this.addr = addr;
+  }
+  // 只有getter方法，无setter方法...
+}
+
+public class Address {
+  private String province;
+  private String city;
+  public Address(String province, String city) {
+    this.province = province;
+    this.city= city;
+  }
+  // 只有getter方法，无setter方法..
+}
+
+
+面向对象编程最大的特点是：以类、对象作为组织代码的单元以及它的四大特性。面向过程编程最大的特点是：以函数作为组织代码的单元，数据与方法相分离
+函数式编程最独特的地方在于它的编程思想。函数式编程认为，程序可以用一系列数学函数或表达式的组合来表示。函数式编程是程序面向数学的更底层的抽象，将计算过程描述为表达式
+函数式编程有它自己适合的应用场景，比如开篇提到的科学计算、数据处理、统计分析等。在这些领域，程序往往比较容易用数学表达式来表示，比起非函数式编程，实现同样的功能，函数式编程可以用很少的代码就能搞定。但是，对于强业务相关的大型业务系统开发来说，费劲吧啦地将它抽象成数学表达式，硬要用函数式编程来实现，显然是自讨苦吃。相反，在这种应用场景下，面向对象编程更加合适，写出来的代码更加可读、可维护。
+具体到编程实现，函数式编程跟面向过程编程一样，也是以函数作为组织代码的单元。不过，它跟面向过程编程的区别在于，它的函数是无状态的。何为无状态？简单点讲就是，函数内部涉及的变量都是局部变量，不会像面向对象编程那样，共享类成员变量，也不会像面向过程编程那样，共享全局变量。函数的执行结果只与入参有关，跟其他任何外部变量无关。同样的入参，不管怎么执行，得到的结果都是一样的。
+
+
+
+// 有状态函数: 执行结果依赖b的值是多少，即便入参相同，多次执行函数，函数的返回值有可能不同，因为b值有可能不同。
+int b;
+int increase(int a) {
+  return a + b;
+}
+
+// 无状态函数：执行结果不依赖任何外部变量值，只要入参相同，不管执行多少次，函数的返回值就相同
+int increase(int a, int b) {
+  return a + b;
+}
